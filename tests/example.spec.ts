@@ -18,7 +18,7 @@ test('Get all Articles', async ({ request }) => {
 })
 
 
-test('Create an Article', async ({ request }) => {
+test('Create and delete Article', async ({ request }) => {
   const createArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
     data: { user: { email: "nahid@test.com", password: "nahid@test.com" } }
   })
@@ -30,7 +30,7 @@ test('Create an Article', async ({ request }) => {
   const createNewPostResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles/', {
     data: {
       "article": {
-        "title": "Hello_Nahid_2025",
+        "title": "Test Post",
         "description": "Hello",
         "body": "Hello",
         "tagList": []
@@ -42,5 +42,16 @@ test('Create an Article', async ({ request }) => {
   })
 
   const newPostResponseJson = await createNewPostResponse.json();
+  // console.log(newPostResponseJson);
   expect(createNewPostResponse.status()).toBe(201)
+  expect(newPostResponseJson.article.title).toEqual('Test Post')
+
+  const articlesResponse = await request.get('https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0', {
+    headers: {
+      Authorization: authToken
+    }
+  })
+  const articlesResponseJson = await articlesResponse.json();
+  expect(articlesResponse.status()).toBe(200)
+  expect(articlesResponseJson.articles[0].title).toEqual('Test Post')
 })
